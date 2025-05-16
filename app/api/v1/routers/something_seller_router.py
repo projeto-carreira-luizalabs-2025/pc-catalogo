@@ -19,13 +19,33 @@ router = APIRouter(prefix=SOMETHING_PREFIX, tags=["CRUD Catálogo"])
     response_model=ListResponse[SomethingResponse],
     status_code=status.HTTP_200_OK,
     summary="Buscar todos os produtos",
-    description="Retorna todos os produtos cadastrados no catálogo.",
+    description=
+    """
+    Retorna todos os produtos cadastrados no catálogo.
+
+        Atributos:
+
+            - seller_id: Identificador do vendedor.
+            - sku: Identificador do produto.
+            - product_name: Nome do produto.
+
+        Exemplo:
+
+        {
+            "seller_id": "magalu",
+            "sku": "mon-27-144hz",
+            "quantidade": "Monitor de 27 polegadas 144Hz Full HD", 
+        }
+
+    """,
 )
 @inject
 async def get_all_products(
+    
     paginator: Paginator = Depends(get_request_pagination),
     something_service: "SomethingService" = Depends(Provide[Container.something_service]),
 ):
+
     results = await something_service.find(paginator=paginator, filters={})
 
     return paginator.paginate(results=results)
@@ -36,7 +56,11 @@ async def get_all_products(
     response_model=SomethingResponse,
     status_code=status.HTTP_200_OK,
     summary="Buscar produto por Seller_id e SKU",
-    description="Retorna um produto específico do catálogo com base no seller_id e SKU.",
+    description=
+    """
+        Retorna um produto específico do catálogo com base no seller_id e SKU.
+
+    """,
 )
 @inject
 async def get_product(
@@ -53,7 +77,21 @@ async def get_product(
     response_model=SomethingResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Cadastrar um novo produto",
-    description="Cria um novo produto no catálogo com base nos dados fornecidos.",
+    description=
+    """
+    Cria um novo produto no catálogo com base nos dados fornecidos.
+
+        Parâmetros:
+            
+            - seller_id: Identificador do vendedor.
+            - sku: Identificador do produto.
+            - product_name: Nome do produto.
+
+        Retorna:
+
+            O produto adicionado.
+
+    """,
 )
 @inject
 async def create(
@@ -82,7 +120,19 @@ async def update_by_id(
         "/{seller_id}/{sku}",
         status_code=status.HTTP_204_NO_CONTENT,
         summary="Deletar produto",
-        description="Deleta um produto do catálogo com base no seller_id e SKU.")
+        description=
+        """
+            Deleta um produto do catálogo com base no seller_id e SKU.
+
+            Parâmetros:
+                seller_id: ID do vendedor.
+                sku: Código do produto.
+
+            Erros:
+                404 - Este produto não existe.
+        """
+        
+        )
 @inject
 async def delete(
     seller_id: str,

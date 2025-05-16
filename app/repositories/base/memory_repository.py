@@ -49,6 +49,24 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
             return result
         raise NotFoundException("Produto não encontrado.")
     
+    async def update(self, entity_id: ID, entity: Any) -> T:
+        # Busca o produto pelo seller_id e sku
+        product = await self.find_product(entity.seller_id, entity.sku)
+
+        if product:
+
+            # Atualiza o campo product_name
+            if hasattr(entity, "product_name"): 
+                product.product_name = entity.product_name
+
+            # Atualiza o campo updated_at
+            if hasattr(product, "updated_at"):
+                product.updated_at = utcnow()
+            return product
+
+        raise NotFoundException()
+    
+    
     async def delete_product(self, product) -> None:
 
         if product in self.memory:
@@ -73,17 +91,7 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
             entities.append(document)
         return entities
 
-    async def update(self, entity_id: ID, entity: Any) -> T:
-        # XXX Chave fixada por somehting, ajustar depois.
-        entity_dict = entity.model_dump(by_alias=True, exclude={"identity"})
-        entity_dict["updated_at"] = utcnow()
 
-        current_document = await self.find_by_id(entity_id)
-
-        if current_document:
-            # TODO XXX Atualizar os dados
-            return self.model_class(**current_document)
-        raise NotFoundException()
 
     async def delete_by_id(self, entity_id: ID) -> None:
         # XXX TODO

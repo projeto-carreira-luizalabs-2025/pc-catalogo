@@ -12,7 +12,7 @@ GET {{url}}/seller/v1/catalogo?_limit=50&_offset=0
 POST {{api_catalogo}}
 
 {
-  "seller_id": "magalu1",
+  "seller_id": "Magalu11",
   "sku": "cadeira1",
   "product_name": "cadeira1"
 }
@@ -22,12 +22,26 @@ POST {{api_catalogo}}
 POST {{api_catalogo}}
 
 {
-  "seller_id": "M1",
+  "seller_id": "MAaa1",
   "sku": "11111",
-  "product_name": "12"
+  "product_name": "11"
 }
+###
 
+
+#Atualizar o nome de um produto
+@api_catalogo={{url}}/seller/v1/catalogo
+
+PATCH {{api_catalogo}}/maaa1/11111
+
+{
+  "seller_id": "Maaa1",
+  "sku": "11111",
+  "product_name": "200"
+}
 ###
 
 # Remove produto
-DELETE {{api_catalogo}}/1111/11111
+DELETE {{api_catalogo}}/Magalu11/cadeira1
+
+###

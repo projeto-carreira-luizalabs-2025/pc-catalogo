@@ -18,26 +18,37 @@ class CatalogoService(CrudService[Catalogo, int]):
         #Valida o seller_id
         await self.validade_seller_id(catalogo.seller_id)
 
+        # Converte o seller_id para minúsculas
+        catalogo.seller_id = catalogo.seller_id.lower()
+
         # Verifica se o produto já existe
         await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
         
         # Valida o tamanho do nome do produto
         await self.validate_len_product_name(catalogo.product_name)
         
-        # Converte o seller_id para minúsculas
-        catalogo.seller_id = catalogo.seller_id.lower()
-        
         # Cria o produto
         resp = await super().create(catalogo)
         return resp
     
+    async def update(self, entity_id, entity):
+
+        # Converte o seller_id para minúsculas
+        entity.seller_id = entity.seller_id.lower()
+
+        return await super().update(entity_id, entity)
+
     async def delete_product(self, seller_id: str, sku: str) -> None:
         """
         Deleta um produto do catálogo.
         """
         try:
+            # Converte o seller_id para minúsculas
+            seller_id = seller_id.lower()
+
             # Tenta encontrar o produto pelo seller_id e SKU
             product = await self.find_product(seller_id, sku)
+
         except Exception:  # Captura NotFoundException ou equivalente
             product = None
 
