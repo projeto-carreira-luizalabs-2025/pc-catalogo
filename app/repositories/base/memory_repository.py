@@ -49,22 +49,55 @@ class AsyncMemoryRepository(AsyncCrudRepository[T, ID], Generic[T, ID]):
             return result
         raise NotFoundException("Produto não encontrado.")
     
+    """
     async def update(self, entity_id: ID, entity: Any) -> T:
-        # Busca o produto pelo seller_id e sku
-        product = await self.find_product(entity.seller_id, entity.sku)
+            # Busca o produto pelo seller_id e sku
+            product = await self.find_product(entity.seller_id, entity.sku)
 
-        if product:
+            if product:
 
-            # Atualiza o campo product_name
-            if hasattr(entity, "product_name"): 
-                product.product_name = entity.product_name
+                # Atualiza o campo product_name
+                if hasattr(entity, "product_name"): 
+                    product.product_name = entity.product_name
 
-            # Atualiza o campo updated_at
-            if hasattr(product, "updated_at"):
-                product.updated_at = utcnow()
-            return product
+                # Atualiza o campo updated_at
+                if hasattr(product, "updated_at"):
+                    product.updated_at = utcnow()
+                return product
 
-        raise NotFoundException()
+            raise NotFoundException()
+    """
+    async def update(self, entity_id: ID, entity_update_payload) -> T:
+        index_to_update = -1
+        found_entity = None
+        for i, item in enumerate(self.memory):
+            if hasattr(item, "seller_id") and item.seller_id == entity_id:
+                index_to_update = i
+                found_entity = item
+                break
+            elif hasattr(item, 'id') and item.id == entity_id:
+                index_to_update = i
+                found_entity = item
+                break
+        if found_entity is None:
+            raise NotFoundException(f"Entidade com ID {entity_id} não encontrada.")
+        
+        update_data = entity_update_payload.model_dump(exclude_unset=True)
+        
+        if not update_data:
+            return found_entity
+        
+        for key, value in update_data.items():
+            if hasattr(found_entity, key):
+                setattr(found_entity, key, value)
+            
+        if hasattr(found_entity, "updated_at"):
+            setattr(found_entity, "updated_at", utcnow())
+            
+        return found_entity
+
+
+
     
     
     async def delete_product(self, product) -> None:

@@ -112,7 +112,8 @@ async def update_by_id(
     something: SomethingUpdate,
     something_service: "SomethingService" = Depends(Provide[Container.something_service]),
 ):
-    return await something_service.update(seller_id, something)
+    #return await something_service.update(seller_id, something)
+    return await something_service.update(seller_id, sku, something)
 
 
 #DELETA UM PRODUTO

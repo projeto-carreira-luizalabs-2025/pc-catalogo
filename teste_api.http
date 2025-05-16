@@ -22,7 +22,7 @@ POST {{api_catalogo}}
 POST {{api_catalogo}}
 
 {
-  "seller_id": "MAaa1",
+  "seller_id": "MAaa11",
   "sku": "11111",
   "product_name": "11"
 }
@@ -35,7 +35,7 @@ POST {{api_catalogo}}
 PATCH {{api_catalogo}}/maaa1/11111
 
 {
-  "seller_id": "Maaa1",
+  "seller_id": "maaa11",
   "sku": "11111",
   "product_name": "200"
 }

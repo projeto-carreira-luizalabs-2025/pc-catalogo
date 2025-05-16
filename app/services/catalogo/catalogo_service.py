@@ -37,6 +37,8 @@ class CatalogoService(CrudService[Catalogo, int]):
         entity.seller_id = entity.seller_id.lower()
 
         return await super().update(entity_id, entity)
+    
+
 
     async def delete_product(self, seller_id: str, sku: str) -> None:
         """
