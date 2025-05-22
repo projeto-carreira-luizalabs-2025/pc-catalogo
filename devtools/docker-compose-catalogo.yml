@@ -6,10 +6,9 @@ services:
     container_name: catalogo
     ports:
       - "8000:8000"
-    volumes:
-      - .:/catalogo
-    working_dir: /catalogo
-    command: uvicorn app.api_main:app --host 0.0.0.0 --port 8000
+    # volumes:
+    #   - .:/catalogo
+    # working_dir: /catalogo
     env_file:
       - ../.env
     restart: unless-stopped

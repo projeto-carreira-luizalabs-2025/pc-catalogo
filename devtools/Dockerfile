@@ -1,6 +1,5 @@
 # Primeira etapa: instalar os pacotes do Python
-# Montar a estrutura de arquivos da aplicação
-FROM python:3.12-slim as construtor
+FROM python:3.12-slim AS construtor
 
 SHELL ["/bin/bash", "-c"]
 
@@ -13,7 +12,7 @@ RUN pip install --upgrade pip && pip install -r requirements/base.txt
 
 # Instalar meus pacotes
 RUN python -m venv venv && \
-  .  venv/bin/activate && \
+  . venv/bin/activate && \
   pip install --upgrade pip && \
   pip install --no-cache-dir -r requirements.txt
 
@@ -21,13 +20,14 @@ RUN python -m venv venv && \
 FROM python:3.12-slim
 
 WORKDIR /projeto
-COPY --from=construtor /app/venv /app/venv
+COPY --from=construtor /app/venv /projeto/venv
 COPY app /projeto/app
-COPY requirements.txt /app
+COPY requirements.txt /projeto
 
 RUN python -m compileall app
 
-COPY . .
+# Instala o uvicorn globalmente para garantir que está no PATH
+RUN pip install --no-cache-dir uvicorn
 
 EXPOSE 8000
 
