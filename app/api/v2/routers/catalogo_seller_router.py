@@ -34,7 +34,7 @@ async def get_by_seller_id_paginado(
         seller_id, paginator=paginator, name_like=name_like
     )
 
-#BUSCAR PRODUTO POR SELLER_ID + SKU
+#BUSCAR PRODUTO POR SELLER_ID + SKU 
 @router.get(
     "/{sku}",
     response_model=CatalogoResponse,

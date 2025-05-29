@@ -15,7 +15,6 @@ class CatalogoService(CrudService[Catalogo, int]):
         """
         Cria um novo produto no catálogo.
         """
-        await self.review(catalogo)
         await self.validate(catalogo)
         return await self.save(catalogo)
 
@@ -26,13 +25,6 @@ class CatalogoService(CrudService[Catalogo, int]):
         await self.validate_len_product_name(catalogo.name)
         await self.validate_product_exist(catalogo.seller_id, catalogo.sku)
 
-    async def review(self, catalogo: Catalogo) -> None:
-        # Converte e limpa campos
-        catalogo.seller_id = catalogo.seller_id.lower().strip()
-        catalogo.sku = catalogo.sku.strip()
-        catalogo.name = catalogo.name.strip()
-
-
     async def save(self, catalogo: Catalogo) -> Catalogo:
         return await super().create(catalogo)
     
@@ -41,12 +33,18 @@ class CatalogoService(CrudService[Catalogo, int]):
         Deleta um produto do catálogo.
         """
         seller_id = seller_id.lower()
-        product = await self.find_product(seller_id, sku)
+        product = await self.find_product(seller_id, sku, raise_exception=True)
         if product is None:
             raise ProductNotExistException()
 
         await self.repository.delete(product)
 
+    async def find_product(self, seller_id: str, sku: str, raise_exception: bool = True) -> Catalogo | None:
+        product = await super().find_product(seller_id, sku)
+        if not product and raise_exception:
+            raise ProductNotExistException()
+        return product
+    
     async def find_by_seller_id(self, seller_id):
         """
         Busca todos os produtos no catálogo com base no seller_id.
@@ -76,13 +74,7 @@ class CatalogoService(CrudService[Catalogo, int]):
         """
         Valida se um produto pode ser criado verificando se já existe um produto com o mesmo seller_id e SKU.
         """
-        try:
-            # Tenta encontrar o produto pelo seller_id e SKU
-            product_exist = await self.find_product(seller_id, sku)
-        except Exception:  # Captura NotFoundException ou equivalente
-            product_exist = None
-
-        # Se o produto já existir, lança uma exceção
+        product_exist = await self.find_product(seller_id, sku, raise_exception=False)
         if product_exist:
             raise ProductAlreadyExistsException()
         
@@ -114,7 +106,7 @@ class CatalogoService(CrudService[Catalogo, int]):
         seller_id = seller_id.lower()
 
         # Busca o produto atual
-        product_to_update = await self.find_product(seller_id, sku)
+        product_to_update = await self.find_product(seller_id, sku, raise_exception=True)
 
         if not product_to_update:
             raise ProductNotExistException()
