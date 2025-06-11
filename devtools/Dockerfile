@@ -44,3 +44,5 @@ CMD ["uvicorn", "app.api_main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 #Docker compose
 #docker-compose -f docker-compose-catalogo.yml up --build
+
+#sqa_4145de8c472e9aa81985dc4622eebdbf1f7498b3

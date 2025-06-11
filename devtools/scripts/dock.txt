@@ -1,4 +1,0 @@
-# Montagem
-# docker build -f ./devtools/Dockerfile -t catalogo:0.0.1 .
-# Execução
-# docker run --rm -p 8000:8000 catalogo:0.0.1

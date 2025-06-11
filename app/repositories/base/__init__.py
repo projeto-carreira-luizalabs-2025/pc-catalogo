@@ -1,4 +1,4 @@
 from .async_crud_repository import AsyncCrudRepository
-from .memory_repository import AsyncMemoryRepository
+from .mongo_catalogo_repository import MongoCatalogoRepository
 
-__all__ = ["AsyncMemoryRepository", "AsyncCrudRepository"]
+__all__ = ["MongoCatalogoRepository", "AsyncCrudRepository"]

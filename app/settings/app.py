@@ -1,15 +1,16 @@
-from pydantic import Field
+from pydantic import Field, MongoDsn
+from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
 
-from .base import BaseSettings
-
+# Carregar antes da definição
+load_dotenv()
 
 class AppSettings(BaseSettings):
     version: str = "0.0.2"
 
     app_name: str = Field(default="Catálogo API", title="Nome da aplicação")
 
-    memory_min: int = Field(default=64, title="Limite mínimo de memória disponível em MB")
-    disk_usage_max: int = Field(default=80, title="Limite máximo de 80% de uso de disco")
+    app_db_url_mongo: MongoDsn = Field(..., title="URI para o MongoDB")
 
 
 settings = AppSettings()

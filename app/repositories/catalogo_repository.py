@@ -1,14 +1,24 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 
-from app.common.exceptions import NotFoundException
+from ..models import CatalogoModel
+from .base import MongoCatalogoRepository
 
-from ..models import Catalogo
-from .base import AsyncMemoryRepository
+if TYPE_CHECKING:
+    from app.integrations.database.mongo_client import MongoClient
 
 
-class CatalogoRepository(AsyncMemoryRepository[Catalogo, UUID]):
+class CatalogoRepository(MongoCatalogoRepository[CatalogoModel, UUID]):
 
-     """ """
+    COLLECTION_NAME = "catalogo"
+
+    def __init__(self, client: "MongoClient"):
+        super().__init__(client, collection_name=self.COLLECTION_NAME, model_class=CatalogoModel)
+
 
 __all__ = ["CatalogoRepository"]
-    
+
+
+
+
+

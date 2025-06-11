@@ -3,7 +3,7 @@ services:
     build:
       context: ..
       dockerfile: devtools/Dockerfile
-    container_name: pc-boleirplate-python
+    container_name: catalogo
     ports:
       - "8000:8000"
     volumes:

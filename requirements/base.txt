@@ -4,3 +4,7 @@ uvicorn[standard]==0.34.0
 dependency-injector==4.46.0
 pydantic_settings==2.9.1
 uuid7==0.1.0
+motor==3.7.1
+asyncpg==0.30.0
+sqlalchemy==2.0.41
+greenlet==3.2.2
