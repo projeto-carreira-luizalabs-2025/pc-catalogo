@@ -10,6 +10,20 @@ from ...settings import ApiSettings
 HEADER_X_REQUEST_ID = "X-Request-ID"
 
 
+# TraceIdMiddleware é usado para gerar um ID de rastreamento único para cada requisição.
+from starlette.middleware.base import BaseHTTPMiddleware
+import uuid
+
+class TraceIdMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        request.state.trace_id = str(uuid.uuid4())
+        response = await call_next(request)
+        return response
+
+# No seu app:
+
+
+
 def configure_middlewares(app: FastAPI, settings: ApiSettings) -> None:
     app.add_middleware(
         CORSMiddleware,  # type: ignore[attr-defined]
@@ -27,3 +41,5 @@ def configure_middlewares(app: FastAPI, settings: ApiSettings) -> None:
     )
 
     app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+    app.add_middleware(TraceIdMiddleware)

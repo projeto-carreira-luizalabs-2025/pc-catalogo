@@ -151,3 +151,18 @@ class CatalogoService(CrudService[CatalogoModel, int]):
 
         if not product_exist:
             raise ProductNotExistException()
+        
+    async def find_by_sellerid_sku(self, seller_id: str, sku: str, raises_exception: bool = True) -> T | None:
+        try:
+            product_exist = await self.repository.find_by_sellerid_sku(seller_id, sku)
+        except Exception:
+            product_exist = None
+
+        if not product_exist:
+            if raises_exception:
+                raise ProductNotExistException()
+            return None
+        return product_exist
+
+
+   

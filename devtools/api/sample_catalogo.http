@@ -1,0 +1,101 @@
+##
+# Chamadas testes com nossa API
+
+###
+# URL
+@url=http://127.0.0.1:8000
+@url_keycloak=http://localhost:8080/realms/marketplace
+@api_catalogo=http://127.0.0.1:8000/seller/v2/catalogo
+
+## ---------------------------
+# HEALTH
+
+@api_health={{url}}/api/health
+
+###
+# Ping versão
+GET {{api_health}}
+
+## ---------------------------
+# CATALOGO
+###
+# Meu seller de testes
+
+@seller_id=magalu
+
+###
+# Obtendo o token do usuário `vendedorcatalogo`
+# @name usertoken
+POST {{url_keycloak}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=varejo&username=vendedorcatalogo&password=senha123&grant_type=password&scope=sellers
+
+###
+#Cadastrando produto
+POST {{api_catalogo}}
+x-seller-id: magalu
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+{
+    "sku": "tvsam4k60",
+    "name": "tv samsung 4k 60 polegadas"
+}
+
+###
+# Buscando produtos por seller_id
+GET {{api_catalogo}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+###
+@sku=tvsam4k60
+# Consultando produto por seller_id + sku
+GET {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+###
+# Atualizando apenas o campo name
+PATCH {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+{
+    "name": "tvsam4k70"
+}
+
+###
+# Atualizando todos os campos / terao novos campos
+PATCH {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+{
+    "name": "tv samsung 4k 80 polegadas"
+}
+
+###
+# Removendo
+DELETE {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+###
+# Consultando sem enviar token
+GET {{api_catalogo}}/{{sku}}
+
+###
+# Consultando enviando token inválido
+GET {{api_catalogo}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer token-invalido
+
+###
+# Consultando com seller-id-invalido
+GET {{api_catalogo}}/{{sku}}
+x-seller-id: seller-nao-cadastrado
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+
+

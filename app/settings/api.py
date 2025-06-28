@@ -1,5 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
 from pydantic import BaseModel, Field
-
 from .app import AppSettings
 
 

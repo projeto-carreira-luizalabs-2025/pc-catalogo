@@ -8,6 +8,7 @@ from app.services import CatalogoService, HealthCheckService, CatalogoServiceV1
 
 from app.settings.app import AppSettings
 
+from app.integrations.auth.keycloak_adapter import KeycloakAdapter
 
 
 class Container(containers.DeclarativeContainer):
@@ -22,6 +23,7 @@ class Container(containers.DeclarativeContainer):
 
     mongo_client = providers.Singleton(MongoClient, config.app_db_url_mongo)
     
+    keycloak_adapter = providers.Singleton(KeycloakAdapter, config.app_openid_wellknown)
     
     # V1 - Memory
     # ** Repositório

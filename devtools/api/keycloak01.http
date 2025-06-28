@@ -1,0 +1,102 @@
+### -----------------------------------
+# Configurações para o keycloak
+
+###
+# URL base
+@kk_url=http://localhost:8080
+
+###
+# Realm
+@realm=marketplace
+
+
+###
+# URL base do REALM marketplace
+@url={{kk_url}}/realms/{{realm}}
+
+###  
+# Descobrindo as URLs publicadas do realm
+GET {{url}}/.well-known/openid-configuration
+
+###
+# Obtendo o token do usuário `vendedor1`
+# @name vendedor01
+POST {{url}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=varejo&grant_type=password&username=vendedor1&password=senha123&scope=openid
+
+###
+# Obtendo informação do usuário vendedor01
+#
+POST {{url}}/protocol/openid-connect/userinfo
+Authorization: Bearer {{vendedor01.response.body.access_token}}
+
+###
+# Obtendo o token do usuário `admin_marketplace`
+# sob o client admin-cli
+# @name admin_marketplace
+POST {{url}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=admin-cli&grant_type=password&username=admin_marketplace&password=senha123&scope=openid
+
+###
+# Listando os usuários
+#
+GET {{kk_url}}/admin/realms/{{realm}}/users
+Authorization: Bearer {{admin_marketplace.response.body.access_token}}
+
+###
+# Procurando pelo usuário usuario02
+#
+GET {{kk_url}}/admin/realms/{{realm}}/users?username=usuario02
+Authorization: Bearer {{admin_marketplace.response.body.access_token}}
+
+###
+# 
+# Profile (dados) do usuário.
+# Para vermos se foi criado o campo `sellers` para os atributos do usuário
+GET {{kk_url}}/admin/realms/{{realm}}/users/profile
+Authorization: Bearer {{admin_marketplace.response.body.access_token}}
+
+###
+# Criando um usuário associado a uma empresa
+# (este é customizado para nós)
+#
+# Antes de criar o usuário, é bom executar o script:
+# python ./devtools/keycloak-config/setup_sellers_attribute.py
+#
+POST {{kk_url}}/admin/realms/{{realm}}/users
+Authorization: Bearer {{admin_marketplace.response.body.access_token}}
+
+{
+    "username": "projetocarreira01@pc.com.br",
+    "enabled": true,
+    "firstName": "Projeto",
+    "lastName": "Carreira",
+    "email": "projetocarreira01@pc.com.br",
+    "emailVerified": true,
+    "attributes": {
+        "sellers": ["martins"]
+    },
+    "credentials": [
+        {
+            "type": "password",
+            "value": "minhasenhasupersegura",
+            "temporary": false
+        }
+    ],
+    "realmRoles": [
+        "offline_access",
+        "uma_authorization"
+    ]
+}
+
+###
+# Vamos testar este usuário novo
+#
+POST {{url}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=varejo&grant_type=password&username=projetocarreira01@pc.com.br&password=minhasenhasupersegura

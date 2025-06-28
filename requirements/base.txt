@@ -8,3 +8,5 @@ motor==3.7.1
 asyncpg==0.30.0
 sqlalchemy==2.0.41
 greenlet==3.2.2
+pyjwt[crypto]==2.10.1
+cryptography==45.0.4

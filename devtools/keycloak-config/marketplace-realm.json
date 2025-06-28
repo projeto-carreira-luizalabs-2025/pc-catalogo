@@ -1,0 +1,128 @@
+{
+  "realm": "marketplace",
+  "enabled": true,
+  "registrationAllowed": true,
+  "clientScopes": [
+    {
+      "name": "sellers",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "sellers_mapper",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "sellers",
+            "claim.name": "sellers",
+            "json.type.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "varejo",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "protocol": "openid-connect",
+      "defaultClientScopes": [
+        "sellers",
+        "profile",
+        "email",
+        "roles",
+        "web-origins"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin_marketplace",
+      "enabled": true,
+      "firstName": "Admin",
+      "lastName": "Varejo",
+      "email": "admin@varejo.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "senha123",
+          "temporary": false
+        }
+      ],
+      "clientRoles": {
+        "realm-management": ["realm-admin"]
+      },
+      "realmRoles": ["offline_access", "uma_authorization"]
+    },
+    {
+      "username": "vendedor1",
+      "enabled": true,
+      "firstName": "Vendedor",
+      "lastName": "Um",
+      "email": "vendedor1@varejo.com",
+      "attributes": {
+        "sellers": "luizalabs"
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "senha123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["offline_access", "uma_authorization"]
+    },
+    {
+      "username": "usuario02",
+      "enabled": true,
+      "firstName": "Outro",
+      "lastName": "Usuário",
+      "email": "usuario02@seller02.com",
+      "attributes": {
+        "sellers": "luizalabs,seller02"
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "outrasenha",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["offline_access", "uma_authorization"]
+    },
+    {
+      "username": "vendedorcatalogo",
+      "enabled": true,
+      "firstName": "VendedorCatalogo",
+      "lastName": "Um",
+      "email": "vendedorcatalogo1@varejo.com",
+      "attributes": {
+        "sellers": "magalu"
+      },
+      "credentials": [
+        {
+          "type": "password",
+          "value": "senha123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["offline_access", "uma_authorization"]
+    }
+  ]
+}

@@ -17,10 +17,16 @@ class UuidModel(IdModel):
 class IntModel(IdModel):
     id: int | None = Field(None, description="Identificador")
 
+class UserModel(BaseModel):
+    name: str | None
+    server: str | None
+    
 
 class AuditModel(BaseModel):
     created_at: datetime | None = Field(default_factory=utcnow, description="Data e hora da criação")
+    created_by: UserModel | None = Field(None, description="Usuário que criou")
     updated_at: datetime | None = Field(None, description="Data e hora da atualização")
+    updated_by: UserModel | None = Field(None, description="Usuário alterou")
 
 
 class PersistableEntity(IdModel, AuditModel):

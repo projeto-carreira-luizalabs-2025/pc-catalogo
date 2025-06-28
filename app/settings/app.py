@@ -1,4 +1,4 @@
-from pydantic import Field, MongoDsn
+from pydantic import Field, HttpUrl, MongoDsn
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
 
@@ -12,5 +12,6 @@ class AppSettings(BaseSettings):
 
     app_db_url_mongo: MongoDsn = Field(..., title="URI para o MongoDB")
 
+    app_openid_wellknown: HttpUrl = Field(..., title="URL para well known de um openid")
 
 settings = AppSettings()

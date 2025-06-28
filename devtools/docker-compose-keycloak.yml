@@ -1,0 +1,66 @@
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.5 # Use uma versão LTS ou a mais recente estável
+    ports:
+      - "8080:8080" # Porta para acesso HTTP
+      - "8443:8443" # Porta para acesso HTTPS (opcional, configurar HTTPS no Keycloak)
+    environment:
+      # Credenciais do usuário administrador inicial do Keycloak (console de administração)
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin # ATENÇÃO: Altere esta senha para produção!
+
+      # Configurações do banco de dados PostgreSQL
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password # ATENÇÃO: Altere esta senha para produção!
+
+      # Opções de importação de Realm
+      # Monta o arquivo JSON dentro do contêiner e informa ao Keycloak para importá-lo
+      KC_IMPORT_FILES: /opt/keycloak/data/import/marketplace-realm.json
+      # Define a estratégia de importação:
+      # - overwrite: sobrescreve o realm se existir
+      # - ignore_existing: ignora o realm se existir (bom para evitar erros em restarts)
+      # - abort: aborta a inicialização se o realm existir
+      KC_IMPORT_STRATEGY: ignore_existing # Recomendado para desenvolvimento
+
+      # Necessário para iniciar o Keycloak em modo de desenvolvimento (não recomendado para produção)
+      KC_HOSTNAME: localhost # Altere para o domínio real em produção
+      KC_HTTP_ENABLED: "true" # Garante que o HTTP esteja habilitado (além do HTTPS se configurado)
+      KC_HEALTH_ENABLED: "true" # Habilita endpoints de saúde
+      KC_METRICS_ENABLED: "true" # Habilita endpoints de métricas
+      KC_FEATURES: token-exchange # Exemplo de feature, adicione outras conforme necessário
+
+      # Outras configurações úteis (descomente/ajuste se precisar)
+      # KC_LOG_LEVEL: INFO # DEBUG, WARN, ERROR
+      # KC_HTTPS_PORT: 8443 # Se usar HTTPS
+      # KC_PROXY: edge # ou 'reencrypt', 'passthrough' dependendo do seu proxy/load balancer
+      # KC_HTTP_RELATIVE_PATH: /auth # Se rodar o Keycloak em um subcaminho
+
+    volumes:
+      # Monta o diretório local com seu arquivo JSON para importação
+      - ./keycloak-config:/opt/keycloak/data/import
+      # Volume para persistir os dados do Keycloak (sessions, caches, etc.)
+      # - keycloak_data:/opt/keycloak/data
+    depends_on:
+      - keycloak-db
+    command: ["start-dev", "--import-realm"] # Comando para iniciar o Keycloak em modo de desenvolvimento
+    #command: ["start-dev"] # Comando para iniciar o Keycloak em modo de desenvolvimento
+    restart: unless-stopped
+
+  keycloak-db:
+    image: postgres:13
+    hostname: keycloak-db
+    ports:
+      - "5432:5432" # Porta para acesso direto ao DB (opcional)
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password # ATENÇÃO: Altere esta senha para produção!
+    #volumes:
+    #  - keycloak_postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+  # Sem volumes para testes "locais"
+  #volumes:
+  #  keycloak_data:
+  #  keycloak_postgres_data:

@@ -1,2 +1,3 @@
 ENV=test
 APP_DB_URL_MONGO=mongodb://admin:admin@mongodb-tests:27017/test_db?authSource=admin&connectTimeoutMS=1000&socketTimeoutMS=1000
+APP_OPENID_WELLKNOWN=http://keycloak:8080/realms/marketplace/.well-known/openid-configuration

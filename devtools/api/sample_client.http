@@ -1,0 +1,137 @@
+##
+# Chamadas testes com nossa API
+
+###
+# URL
+@url=http://localhost:8000
+
+## ---------------------------
+# HEALTH
+
+@api_health={{url}}/api/health
+
+###
+# Ping versão
+GET {{api_health}}
+
+###
+# Meu seller de testes
+@seller_id=luizalabs
+
+###
+#
+# Usuário e senha do seller
+@username=seller01
+@password=senha123
+
+@sku=sample-sku
+
+###
+# Conectando no Keycloak
+
+@url_keycloak=http://localhost:8080/realms/marketplace
+
+###
+# Obtendo o token do usuário `vendedor1`
+# @name usertoken
+POST {{url_keycloak}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=varejo&username=vendedor1&password=senha123&grant_type=password
+
+
+### -----------------------
+# SOMETHING
+
+@api_something={{url}}/seller/v2/catalogo
+
+###
+# Consultando sem enviar token
+GET {{api_something}}/{{sku}}
+
+
+###
+# Consultando enviando token inválido
+GET {{api_something}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer token-invalido
+
+###
+# Consultando 
+GET {{api_something}}/{{sku}}
+x-seller-id: {{seller_id}}
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+###
+# Consultando com seller-id-invalido
+GET {{api_something}}/{{sku}}
+x-seller-id: seller-nao-cadastrado
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+
+###
+# Cadastrando
+#
+POST {{api_something}}
+x-seller-id: {{seller_id}}
+
+{
+    "sku": "sample-sku",
+    "field1": "value-field-1",
+    "field2": 123
+}
+
+###
+# Pesquisando por sku
+GET {{api_something}}/{{sku}}
+x-seller-id: {{seller_id}}
+
+###
+# Atualizando
+PUT {{api_something}}/{{sku}}
+x-seller-id: {{seller_id}}
+
+{
+    "field1": "value-field-2",
+    "field2": 1234
+}
+
+###
+# Atualizando apenas o campo field2
+PATCH {{api_something}}/{{sku}}
+x-seller-id: {{seller_id}}
+
+{
+    "field2": -10
+}
+
+###
+# Removendo
+DELETE {{api_something}}/{{sku}}
+x-seller-id: {{seller_id}}
+
+
+
+
+@url_keycloak=http://localhost:8080/realms/marketplace
+
+###
+# Obtendo o token do usuário `bruno01`
+# @name usertoken
+POST {{url_keycloak}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=varejo&username=bruno01&password=bruno01&grant_type=password&scope=openid sellers
+
+###
+@api_catalogo=http://127.0.0.1:8000/seller/v2/catalogo
+###
+
+POST {{api_catalogo}}
+seller-id: magalu
+Authorization: Bearer {{usertoken.response.body.access_token}}
+
+{
+    "sku": "samplesku",
+    "name": "teste"
+}
